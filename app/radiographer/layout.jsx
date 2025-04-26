@@ -10,6 +10,7 @@ import {
     LogoutOutlined,
     BulbOutlined,
     MoonOutlined,
+    TransactionOutlined,
 } from '@ant-design/icons';
 
 const Layout = ({ children }) => {
@@ -67,6 +68,10 @@ const Layout = ({ children }) => {
                     <Link href="/radiographer/patients" className={getLinkClasses('/radiographer/patients')}>
                         <SolutionOutlined style={{ fontSize: '24px' }} />
                         <span className="hidden md:block">Patients</span>
+                    </Link>
+                    <Link href="/radiographer/translator" className={getLinkClasses('/radiographer/translator')}>
+                        <TransactionOutlined style={{ fontSize: '24px' }} />
+                        <span className="hidden md:block">Translator</span>
                     </Link>
                     {/* <Link href="/profile" className='flex items-center gap-x-2 p-2 bg-gray-50 hover:bg-gray-200 rounded-md transition duration-200'>
                         <UserOutlined style={{ fontSize: '24px' }} />

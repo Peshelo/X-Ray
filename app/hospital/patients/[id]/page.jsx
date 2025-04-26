@@ -96,9 +96,7 @@ const Id = () => {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            description:values.description
-          }),
+          body: JSON.stringify(formattedValues),
         });
 
         if (response.ok) {
@@ -301,7 +299,7 @@ const Id = () => {
             icon={<EditOutlined />}
             onClick={() => showEditModal(record)}
           >
-            Add Report
+            Edit
           </Button>
           <Popconfirm
             title="Are you sure you want to delete this radiograph?"
@@ -402,14 +400,14 @@ const Id = () => {
 
         {/* Medical Records Tab */}
         <TabPane tab="Medical Records" key="3">
-          {/* <FloatButtonGroup description="Radiograph">
+          <FloatButtonGroup description="Radiograph">
             <FloatButton
               onClick={showAddModal}
               tooltip="Add new radiograph"
               icon={<PlusOutlined />}
               type="primary"
             />
-          </FloatButtonGroup> */}
+          </FloatButtonGroup>
           <h2 className="text-xl font-bold my-4">Radiograph Records</h2>
           <Table
             columns={columns}
@@ -446,24 +444,24 @@ const Id = () => {
           >
             <DatePicker style={{ width: '100%' }} />
           </Form.Item>
-          <Form.Item
-            name="description"
-            label="Physician Analysis Notes"
-            rules={[{ required: true, message: 'Please enter your analysis' }]}
-          >
-            <Input.TextArea rows={2} placeholder="Analysis Notes" />
-          </Form.Item>
-
-
           {/* <Form.Item
+            name="description"
+            label="Radiographer Notes"
+            rules={[{ required: true, message: 'Please enter your description' }]}
+          >
+            <Input.TextArea rows={2} placeholder="Description" />
+          </Form.Item> */}
+
+
+          <Form.Item
             name="radiographerNotes"
             label="Radiographer Notes"
             rules={[{ required: true, message: 'Please enter notes' }]}
           >
             <Input.TextArea rows={2} placeholder="Notes..." />
-          </Form.Item> */}
+          </Form.Item>
 
-          {/* <Form.Item
+          <Form.Item
             name="imageUrl"
             label="Radiograph Image"
             valuePropName="fileList"
@@ -482,6 +480,7 @@ const Id = () => {
                 onChange={handleFileUpload}
                 className="hidden"
               />
+              {/* Display upload status */}
               {uploading ? (
                 <div className="flex items-center mt-2">
                   <span className="ml-2">Uploading...</span>
@@ -496,7 +495,7 @@ const Id = () => {
                 )
               )}
             </div>
-          </Form.Item> */}
+          </Form.Item>
 
           <Form.Item>
             <Space style={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -525,7 +524,7 @@ const Id = () => {
               className="w-full h-fit object-contain"
             />
             <div className="w-full flex flex-col gap-4">
-              {/* <Descriptions column={1} title="Patient Details" bordered>
+              <Descriptions column={1} title="Patient Details" bordered>
                 <Descriptions.Item label="Name">
                   {selectedRadiograph.patient?.firstname} {selectedRadiograph.patient?.lastname}
                 </Descriptions.Item>
@@ -543,18 +542,18 @@ const Id = () => {
                 <Descriptions.Item label="Contact">
                   {selectedRadiograph.patient?.mobileNumber}
                 </Descriptions.Item>
-              </Descriptions> */}
+              </Descriptions>
 
               <Descriptions column={1} title="Scan Details" bordered>
                 <Descriptions.Item label="Name">{selectedRadiograph.name}</Descriptions.Item>
-                <Descriptions.Item label="Radiographer Notes">{selectedRadiograph.radiographerNotes}</Descriptions.Item>
+                <Descriptions.Item label="Description">{selectedRadiograph.description}</Descriptions.Item>
                 <Descriptions.Item label="Date of Scan">
                   {selectedRadiograph.date
                     ? moment(selectedRadiograph.date).format('YYYY-MM-DD')
                     : 'N/A'}
                 </Descriptions.Item>
-                <Descriptions.Item label="Physician Notes">
-                  {selectedRadiograph.description}
+                <Descriptions.Item label="Radiographer Notes">
+                  {selectedRadiograph.radiographerNotes}
                 </Descriptions.Item>
               </Descriptions>
 

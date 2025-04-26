@@ -89,7 +89,7 @@ const Page = () => {
   return (
     <div className="w-screen h-screen flex flex-col items-center justify-center p-10">
       <div className="logo p-4 text-center">
-        <h1 className="text-2xl font-bold text-black dark:text-white">X-RAY IMAGE</h1>
+        <h1 className="text-2xl font-bold text-black">X-RAY IMAGE</h1>
         <p className="text-xs text-gray-700 dark:text-gray-400">Management System</p>
       </div>
       <div className="w-full max-w-md bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-neutral-900 dark:border-neutral-700">
@@ -108,7 +108,7 @@ const Page = () => {
             <form onSubmit={handleSubmit}>
               <div className="grid gap-y-4">
                 <div>
-                  <label htmlFor="email" className="block text-sm mb-2 dark:text-white">Email address</label>
+                  <label htmlFor="email" className="block text-sm mb-2 dark:text-white text-black">Email address</label>
                   <div className="relative">
                     <input
                       type="email" // Changed to email type for better validation

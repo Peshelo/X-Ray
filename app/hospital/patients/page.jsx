@@ -128,7 +128,7 @@ const Page = () => {
       key: "actions",
       render: (_, record) => (
         <Space size="middle">
-          <Link href={`/radiographer/patients/${record.id}`}>
+          <Link href={`/hospital/patients/${record.id}`}>
             <Button type="link" icon={<EditOutlined />}>
               View Profile
             </Button>
@@ -579,8 +579,8 @@ const Page = () => {
               >
                 <Select placeholder="Select Language">
                   <Option value="ENGLISH">English</Option>
-                  <Option value="SPANISH">Spanish</Option>
-                  <Option value="FRENCH">French</Option>
+                  <Option value="SHONA">Shona</Option>
+                  <Option value="NDEBELE">Ndebele</Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -623,12 +623,12 @@ const Page = () => {
             <Col span={12}>
               <Form.Item
                 name="profileUrl"
-                label="Profile Image"
+                label="Request Form Image"
                 rules={[{ required: true, message: "Please upload profile image" }]}
               >
                 <div className="my-3 p-2 border border-blue-500 rounded-md border-dashed">
                   <label htmlFor="profileUpload" className="text-gray-400 cursor-pointer">
-                    Select Profile Image
+                    Select Request Form
                   </label>
                   <input
                     type="file"
