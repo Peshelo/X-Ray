@@ -11,6 +11,7 @@ import {
     BulbOutlined,
     MoonOutlined,
     TransactionOutlined,
+    SearchOutlined,
 } from '@ant-design/icons';
 
 const Layout = ({ children }) => {
@@ -68,6 +69,10 @@ const Layout = ({ children }) => {
                     <Link href="/radiographer/patients" className={getLinkClasses('/radiographer/patients')}>
                         <SolutionOutlined style={{ fontSize: '24px' }} />
                         <span className="hidden md:block">Patients</span>
+                    </Link>
+                    <Link href="/radiographer/patients/scan" className={getLinkClasses('/radiographer/patients/scan')}>
+                        <SearchOutlined style={{ fontSize: '24px' }} />
+                        <span className="hidden md:block">Fingerprint Scan</span>
                     </Link>
                     <Link href="/radiographer/translator" className={getLinkClasses('/radiographer/translator')}>
                         <TransactionOutlined style={{ fontSize: '24px' }} />

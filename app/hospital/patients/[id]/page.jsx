@@ -46,6 +46,51 @@ const Id = () => {
   const [form] = Form.useForm();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedRadiograph, setSelectedRadiograph] = useState(null);
+  const [selectedFiles, setSelectedFiles] = useState(null);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [error, setError] = useState('');
+
+  const handleFileChange = (e) => {
+    if (e.target.files) {
+      setSelectedFiles(e.target.files);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!selectedFiles || selectedFiles.length === 0) {
+      setError('Please select fingerprint files to upload.');
+      return;
+    }
+
+    const formData = new FormData();
+    for (let i = 0; i < selectedFiles.length; i++) {
+      formData.append('files', selectedFiles[i]);
+    }
+
+    try {
+      setUploading(true);
+      setError('');
+      setSuccessMessage('');
+      
+      const response = await fetch(`http://localhost:8080/patient/add-fingerprint?userId=${id}`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload fingerprint.');
+      }
+
+      setSuccessMessage('Fingerprint(s) uploaded successfully.');
+      setSelectedFiles(null);
+    } catch (err) {
+      console.error(err);
+      setError(err.message || 'An error occurred.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
 
   // Navigate back to the previous page
   const onBack = () => {
@@ -379,7 +424,7 @@ const Id = () => {
         </TabPane>
 
         {/* National ID Tab */}
-        <TabPane tab="National ID" key="2">
+        <TabPane tab="Identity Documents" key="2">
           <Card className="mb-6" loading={loading}>
             {patient?.nationalIdUrl ? (
               <div className="flex justify-center mb-4">
@@ -395,6 +440,35 @@ const Id = () => {
             <Descriptions size="middle" title="National ID Details" bordered column={1}>
               <Descriptions.Item label="National ID">{patient?.nationalId}</Descriptions.Item>
             </Descriptions>
+            <h1 className="text-2xl font-bold my-10 text-blue-600 mb-6">
+          Add Fingerprint
+        </h1>
+
+        <div className="flex flex-col gap-4">
+          <input 
+            type="file"
+            onChange={handleFileChange}
+            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
+                       file:rounded-full file:border-0 file:text-sm file:font-semibold
+                       file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+          />
+
+          <button
+            onClick={handleSubmit}
+            disabled={uploading}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg disabled:opacity-50"
+          >
+            {uploading ? "Uploading..." : "Upload Fingerprint(s)"}
+          </button>
+
+          {successMessage && (
+            <p className="text-green-600 text-center text-sm mt-2">{successMessage}</p>
+          )}
+
+          {error && (
+            <p className="text-red-500 text-center text-sm mt-2">{error}</p>
+          )}
+        </div>
           </Card>
         </TabPane>
 
