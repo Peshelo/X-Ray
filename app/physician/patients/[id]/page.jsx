@@ -90,7 +90,7 @@ const Id = () => {
     if (isEdit) {
       // Update radiograph logic (assuming API endpoint exists)
       try {
-        const response = await fetch(`http://localhost:8080/radiograph/${currentRadiograph.id}`, {
+        const response = await fetch(`http://4.222.233.23:8080/radiograph/${currentRadiograph.id}`, {
           method: 'PUT',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -114,7 +114,7 @@ const Id = () => {
     } else {
       // Add new radiograph
       try {
-        const response = await fetch(`http://localhost:8080/radiograph/create-for-patient/${id}`, {
+        const response = await fetch(`http://4.222.233.23:8080/radiograph/create-for-patient/${id}`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -153,7 +153,7 @@ const Id = () => {
       const fileForm = new FormData();
       fileForm.append('file', file);
 
-      const response = await fetch(`http://localhost:8080/documents/upload`, {
+      const response = await fetch(`http://4.222.233.23:8080/documents/upload`, {
         method: 'POST',
         body: fileForm,
         headers: {
@@ -185,7 +185,7 @@ const Id = () => {
     setLoading(true);
     const token = Cookies.get('token');
     try {
-      const response = await fetch(`http://localhost:8080/patient/${id}`, {
+      const response = await fetch(`http://4.222.233.23:8080/patient/${id}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -211,7 +211,7 @@ const Id = () => {
     setLoading(true);
     const token = Cookies.get('token');
     try {
-      const response = await fetch(`http://localhost:8080/radiograph/get-by-patient/${id}`, {
+      const response = await fetch(`http://4.222.233.23:8080/radiograph/get-by-patient/${id}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -237,7 +237,7 @@ const Id = () => {
     setLoading(true);
     const token = Cookies.get('token');
     try {
-      const response = await fetch(`http://localhost:8080/radiograph/${radiographId}`, {
+      const response = await fetch(`http://4.222.233.23:8080/radiograph/${radiographId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -284,7 +284,7 @@ const Id = () => {
       key: 'imageUrl',
       render: (text) => (
         <Image
-          src={`http://localhost:8080/${text}`}
+          src={`http://4.222.233.23:8080/${text}`}
           alt="Radiograph"
           style={{ width: 100, height: 100, objectFit: 'cover' }}
         />
@@ -352,7 +352,7 @@ const Id = () => {
               <div className="mr-4 mb-4 md:mb-0">
                 {patient?.profileUrl ? (
                   <Image
-                    src={`http://localhost:8080/${patient.profileUrl}`}
+                    src={`http://4.222.233.23:8080/${patient.profileUrl}`}
                     alt="Profile Image"
                     width={400}
                     height={400}
@@ -386,7 +386,7 @@ const Id = () => {
             {patient?.nationalIdUrl ? (
               <div className="flex justify-center mb-4">
                 <Image
-                  src={`http://localhost:8080/${patient.nationalIdUrl}`}
+                  src={`http://4.222.233.23:8080/${patient.nationalIdUrl}`}
                   alt="National ID Document"
                   style={{ maxWidth: '400px', width: '100%', objectFit: 'contain' }}
                 />
@@ -489,7 +489,7 @@ const Id = () => {
               ) : (
                 form.getFieldValue('imageUrl') && (
                   <img
-                    src={`http://localhost:8080/${form.getFieldValue('imageUrl')}`}
+                    src={`http://4.222.233.23:8080/${form.getFieldValue('imageUrl')}`}
                     alt="Radiograph"
                     className="w-32 h-32 object-cover my-2 rounded-md shadow-md"
                   />
@@ -521,7 +521,7 @@ const Id = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Image
               alt="X-Ray"
-              src={`http://localhost:8080/${selectedRadiograph.imageUrl}`}
+              src={`http://4.222.233.23:8080/${selectedRadiograph.imageUrl}`}
               className="w-full h-fit object-contain"
             />
             <div className="w-full flex flex-col gap-4">

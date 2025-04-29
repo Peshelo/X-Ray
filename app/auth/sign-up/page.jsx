@@ -47,7 +47,7 @@ const Page = () => {
 
     if (Object.keys(validationErrors).length === 0) {
       // Make POST request to /admin endpoint
-      const baseUrl = 'http://localhost:8080';
+      const baseUrl = 'http://4.222.233.23:8080';
       fetch(baseUrl + '/admin', {
         method: 'POST',
         headers: {
