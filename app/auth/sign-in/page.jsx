@@ -126,9 +126,9 @@ const Page = () => {
                 <div>
                   <div className="flex justify-between items-center">
                     <label htmlFor="password" className="block text-sm mb-2 dark:text-white">Password</label>
-                    <Link href="/recover-account" passHref className="inline-flex items-center gap-x-1 text-sm text-blue-600 decoration-2 hover:underline focus:outline-none focus:underline font-medium dark:text-blue-500">
+                    {/* <Link href="/recover-account" passHref className="inline-flex items-center gap-x-1 text-sm text-blue-600 decoration-2 hover:underline focus:outline-none focus:underline font-medium dark:text-blue-500">
                         Forgot password?
-                    </Link>
+                    </Link> */}
                   </div>
                   <div className="relative">
                     <input
