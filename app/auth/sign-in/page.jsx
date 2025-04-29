@@ -53,7 +53,7 @@ const Page = () => {
         console.log('Role:', data.role[0]);
 
         // Store tokens securely. Note: Using HttpOnly cookies is more secure.
-        document.cookie = `token=${data.token};max-age=86400;path=/;secure;SameSite=Strict`;
+document.cookie = `token=${data.token};max-age=86400;path=/;SameSite=Lax`;
         document.cookie = `username=${encodeURIComponent(email)};max-age=86400;path=/;secure;SameSite=Strict`;
         const role = data.role[0];
         document.cookie = `userRole=${encodeURIComponent(role)};max-age=86400;path=/;secure;SameSite=Strict`;
