@@ -77,7 +77,7 @@ const Radiographer = () => {
   const fetchRadiographers = async () => {
     try {
       const token = Cookies.get("token");
-      const response = await fetch("http://4.222.233.23:8080/radiographer", {
+      const response = await fetch("http://4.222.233.23/api/radiographer", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -245,7 +245,7 @@ const Radiographer = () => {
   const handleDelete = async (id) => {
     try {
       const token = Cookies.get("token");
-      const response = await fetch(`http://4.222.233.23:8080/radiographer/${id}`, {
+      const response = await fetch(`http://4.222.233.23/api/radiographer/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -276,7 +276,7 @@ const Radiographer = () => {
       const fileForm = new FormData();
       fileForm.append("file", file);
 
-      const response = await fetch("http://4.222.233.23:8080/documents/upload", {
+      const response = await fetch("http://4.222.233.23/api/documents/upload", {
         method: "POST",
         body: fileForm,
         headers: {
@@ -315,7 +315,7 @@ const Radiographer = () => {
 
       if (isEdit) {
         // Update Radiographer
-        const response = await fetch(`http://4.222.233.23:8080/radiographer/${currentRadiographer.id}`, {
+        const response = await fetch(`http://4.222.233.23/api/radiographer/${currentRadiographer.id}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -338,7 +338,7 @@ const Radiographer = () => {
         message.success("Radiographer updated successfully");
       } else {
         // Add Radiographer
-        const response = await fetch("http://4.222.233.23:8080/radiographer", {
+        const response = await fetch("http://4.222.233.23/api/radiographer", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -594,7 +594,7 @@ const Radiographer = () => {
               ) : (
                 form.getFieldValue("profileUrl") && (
                   <Image
-                    src={`http://4.222.233.23:8080/${form.getFieldValue("profileUrl")}`}
+                    src={`http://4.222.233.23/api/${form.getFieldValue("profileUrl")}`}
                     alt="Profile"
                     className="w-32 h-32 object-cover my-2 rounded-md shadow-md"
                   />
@@ -626,7 +626,7 @@ const Radiographer = () => {
             <Row gutter={16}>
               <Col span={8}>
                 <Image
-                  src={`http://4.222.233.23:8080/${selectedRadiographer.profileUrl}`}
+                  src={`http://4.222.233.23/api/${selectedRadiographer.profileUrl}`}
                   alt="Profile"
                   className="w-full h-auto rounded-md shadow-md"
                 />

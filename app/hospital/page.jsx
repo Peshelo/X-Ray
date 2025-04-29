@@ -79,7 +79,7 @@ const columns = [
     },
 ];
 
-const BASE_URL = "http://4.222.233.23:8080";
+const BASE_URL = "http://4.222.233.23/api";
 
 const Dashboard = () => {
     const [hospital, setHospital] = useState(null);

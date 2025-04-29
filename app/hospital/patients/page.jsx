@@ -72,7 +72,7 @@ const Page = () => {
         title: "ID",
         dataIndex: "NationalId",
         key: "nationalId",
-        render: (text, record) => <Image src={`http://4.222.233.23:8080/${record.profileUrl}`} width={50} height={50} style={{borderRadius:'100%', objectFit:'cover'}} />,
+        render: (text, record) => <Image src={`http://4.222.233.23/api/${record.profileUrl}`} width={50} height={50} style={{borderRadius:'100%', objectFit:'cover'}} />,
       },
     {
       title: "Name",
@@ -209,7 +209,7 @@ const Page = () => {
     setLoading(true);
     const token = Cookies.get("token");
     try {
-      const response = await fetch("http://4.222.233.23:8080/patient", {
+      const response = await fetch("http://4.222.233.23/api/patient", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -262,7 +262,7 @@ const Page = () => {
   const handleDelete = async (id) => {
     const token = Cookies.get("token");
     try {
-      const response = await fetch(`http://4.222.233.23:8080/patient/${id}`, {
+      const response = await fetch(`http://4.222.233.23/api/patient/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -294,7 +294,7 @@ const Page = () => {
       const fileForm = new FormData();
       fileForm.append("file", file);
 
-      const response = await fetch("http://4.222.233.23:8080/documents/upload", {
+      const response = await fetch("http://4.222.233.23/api/documents/upload", {
         method: "POST",
         body: fileForm,
         headers: {
@@ -331,7 +331,7 @@ const Page = () => {
 
     if (isEdit) {
       try {
-        const response = await fetch(`http://4.222.233.23:8080/patient/${currentPatient.id}`, {
+        const response = await fetch(`http://4.222.233.23/api/patient/${currentPatient.id}`, {
           method: "PUT",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -354,7 +354,7 @@ const Page = () => {
       }
     } else {
       try {
-        const response = await fetch("http://4.222.233.23:8080/patient", {
+        const response = await fetch("http://4.222.233.23/api/patient", {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -611,7 +611,7 @@ const Page = () => {
                   ) : (
                     form.getFieldValue("nationalIdUrl") && (
                       <Image
-                        src={`http://4.222.233.23:8080/${form.getFieldValue("nationalIdUrl")}`}
+                        src={`http://4.222.233.23/api/${form.getFieldValue("nationalIdUrl")}`}
                         alt="National ID"
                         className="w-32 h-32 object-cover my-2 rounded-md shadow-md"
                       />
@@ -645,7 +645,7 @@ const Page = () => {
                   ) : (
                     form.getFieldValue("profileUrl") && (
                       <Image
-                        src={`http://4.222.233.23:8080/${form.getFieldValue("profileUrl")}`}
+                        src={`http://4.222.233.23/api/${form.getFieldValue("profileUrl")}`}
                         alt="Profile"
                         className="w-32 h-32 object-cover my-2 rounded-md shadow-md"
                       />
