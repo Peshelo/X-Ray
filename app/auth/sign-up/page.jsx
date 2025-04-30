@@ -1,180 +1,371 @@
-"use client"
-import Link from 'next/link';
+"use client";
 import React, { useState } from 'react';
+import { Form, Input, Button, Select, DatePicker, message, Steps, Card, Divider } from 'antd';
+import { IconBase } from 'react-icons';
+import { useRouter } from 'next/navigation';
+// import { UserOutlined, HospitalOutlined, LinkOutlined } from '@ant-design/icons';
 
-const Page = () => {
-  const [formData, setFormData] = useState({
-    fullName: '',
-    username: '',
-    email: '',
-    phoneNumber: '',
-    role: 'STUDENT', // role is fixed as student
-  });
+const { Step } = Steps;
+const { Option } = Select;
 
-  const [errors, setErrors] = useState({});
-  const [isSubmitted, setIsSubmitted] = useState(false);
+export default function HospitalAdminCreation() {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [adminId, setAdminId] = useState(null);
+  const [hospitalId, setHospitalId] = useState(null);
+  const [loading, setLoading] = useState(false);
+const router = useRouter(); // Use useRouter from next/navigation
+  const [adminForm] = Form.useForm();
+  const [hospitalForm] = Form.useForm();
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
+  const handleAdminSubmit = async (values) => {
+    console.log(values);
+    setLoading(true);
+    try {
+      // Format date to YYYY-MM-DD
+      values.dateOfBirth = values.dateOfBirth.format('YYYY-MM-DD');
+      values.roles = ["ADMIN"];
 
-  const validate = () => {
-    let errors = {};
-    if (!formData.fullName) {
-      errors.fullName = 'Full name is required';
-    }
-    if (!formData.username) {
-      errors.username = 'Username is required';
-    }
-    if (!formData.email) {
-      errors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = 'Email address is invalid';
-    }
-    if (!formData.phoneNumber) {
-      errors.phoneNumber = 'Phone number is required';
-    } else if (!/^\d{10}$/.test(formData.phoneNumber)) {
-      errors.phoneNumber = 'Phone number is invalid';
-    }
-    return errors;
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const validationErrors = validate();
-    setErrors(validationErrors);
-
-    if (Object.keys(validationErrors).length === 0) {
-      // Make POST request to /admin endpoint
-      const baseUrl = 'http://4.222.233.23/api';
-      fetch(baseUrl + '/admin', {
+      const response = await fetch('http://localhost:8080/admin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          // Handle success
-          if (data.error) {
-            console.error(data.error);
-            return;
-          }
-          setIsSubmitted(true);
-        })
-        .catch((error) => {
-          // Handle error
-          console.error('Error:', error);
-        });
-      setIsSubmitted(true); // Simulate successful submission
+        body: JSON.stringify({
+          "firstname": values.firstname,
+          "lastname": values.lastname,
+          "email": values.email,
+          "username": values.username,
+          "password": values.password,
+          "gender": values.gender,
+          "mobileNumber": values.mobileNumber,
+          "nationalId": values.nationalId,
+          "dateOfBirth": values.dateOfBirth,
+          "address": values.address,
+          "roles": [
+              "ADMIN"
+          ]
+      }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create admin');
+      }
+
+      const data = await response.json();
+      setAdminId(data.id);
+      message.success('Admin created successfully!');
+      setCurrentStep(1);
+    } catch (error) {
+      message.error(`Error creating admin: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleHospitalSubmit = async (values) => {
+    setLoading(true);
+    try {
+      // Create hospital without admin first
+      const hospitalData = {
+        ...values,
+        admin: null,
+        radiographers: []
+      };
+
+      const response = await fetch('http://localhost:8080/hospital', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(hospitalData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create hospital');
+      }
+
+      const data = await response.json();
+      setHospitalId(data.id);
+      message.success('Hospital created successfully!');
+      setCurrentStep(2);
+    } catch (error) {
+      message.error(`Error creating hospital: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAssignAdmin = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`http://localhost:8080/hospital/${hospitalId}/assign-admin/${adminId}`, {
+        method: 'PUT',
+        headers: {
+          'accept': '*/*',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to assign admin to hospital');
+      }
+
+      message.success('Admin assigned to hospital successfully!');
+      setCurrentStep(0);
+      adminForm.resetFields();
+      hospitalForm.resetFields();
+      setAdminId(null);
+      setHospitalId(null);
+      router.push('/auth/sign-in'); // Redirect to hospital page after assignment
+    } catch (error) {
+      message.error(`Error assigning admin: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="w-screen h-screen flex flex-col items-center justify-center p-10">
-       <div className="logo p-4 text-center">
-        <h1 className="text-2xl font-bold text-black">Academic</h1>
-        <p className="text-xs text-gray-700">RESOURCE HUB</p>
-      </div>
-      <div className="w-[500px] h-fit bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-neutral-900 dark:border-neutral-700">
-        <div className="p-4 sm:p-7">
-          <div className="text-center">
-            <h1 className="block text-2xl font-bold text-gray-800 dark:text-white">
-              Sign Up
-            </h1>
-            <p className="mt-2 text-sm text-gray-600 dark:text-neutral-400">
-              Already have an account?{' '}
-              <Link
-                className="text-blue-600 decoration-2 hover:underline focus:outline-none focus:underline font-medium dark:text-blue-500"
-                href="/auth/sign-in"
+    <div className="container mx-auto p-4 max-w-4xl">
+      <Card title="Register new hospital" className="shadow-lg">
+        <Steps current={currentStep} className="mb-8">
+          <Step title="Create Admin"  />
+          <Step title="Create Hospital" />
+          <Step title="Assign Admin" />
+        </Steps>
+
+        <Divider />
+
+        {currentStep === 0 && (
+          <Form
+            form={adminForm}
+            layout="vertical"
+            onFinish={handleAdminSubmit}
+            className="p-4"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Form.Item
+                label="First Name"
+                name="firstname"
+                rules={[{ required: true, message: 'Please input the first name!' }]}
               >
-                Sign in here
-              </Link>
-            </p>
-          </div>
+                <Input placeholder="John" />
+              </Form.Item>
 
-          {isSubmitted ? (
-            <div className="mt-5 p-4 bg-green-100 border border-green-300 text-green-800 rounded-lg">
-              Credentials have been sent to your email.
+              <Form.Item
+                label="Last Name"
+                name="lastname"
+                rules={[{ required: true, message: 'Please input the last name!' }]}
+              >
+                <Input placeholder="Doe" />
+              </Form.Item>
+
+              <Form.Item
+                label="Email"
+                name="email"
+                rules={[
+                  { required: true, message: 'Please input the email!' },
+                  { type: 'email', message: 'Please enter a valid email!' },
+                ]}
+              >
+                <Input placeholder="john.doe@example.com" />
+              </Form.Item>
+
+              <Form.Item
+                label="Username"
+                name="username"
+                rules={[{ required: true, message: 'Please input the username!' }]}
+              >
+                <Input placeholder="johndoe" />
+              </Form.Item>
+
+              <Form.Item
+                label="Password"
+                name="password"
+                rules={[{ required: true, message: 'Please input the password!' }]}
+              >
+                <Input.Password placeholder="••••••••" />
+              </Form.Item>
+
+              <Form.Item
+                label="Gender"
+                name="gender"
+                rules={[{ required: true, message: 'Please select gender!' }]}
+              >
+                <Select placeholder="Select gender">
+                  <Option value="MALE">Male</Option>
+                  <Option value="FEMALE">Female</Option>
+                  <Option value="OTHER">Other</Option>
+                </Select>
+              </Form.Item>
+
+              <Form.Item
+                label="Mobile Number"
+                name="mobileNumber"
+                rules={[{ required: true, message: 'Please input the mobile number!' }]}
+              >
+                <Input placeholder="+1234567890" />
+              </Form.Item>
+
+              <Form.Item
+                label="National ID"
+                name="nationalId"
+                rules={[{ required: true, message: 'Please input the national ID!' }]}
+              >
+                <Input placeholder="1234567890" />
+              </Form.Item>
+
+              <Form.Item
+                label="Date of Birth"
+                name="dateOfBirth"
+                rules={[{ required: true, message: 'Please select date of birth!' }]}
+              >
+                <DatePicker className="w-full" />
+              </Form.Item>
+
+              <Form.Item
+                label="Address"
+                name="address"
+                rules={[{ required: true, message: 'Please input the address!' }]}
+              >
+                <Input.TextArea rows={2} placeholder="123 Main St, City, Country" />
+              </Form.Item>
             </div>
-          ) : (
-            <form onSubmit={handleSubmit}>
-              <div className="grid gap-y-4 mt-5">
-                <div>
-                  <label htmlFor="fullName" className="block text-sm mb-2 dark:text-white">
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    id="fullName"
-                    name="fullName"
-                    className="py-3 px-4 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500"
-                    value={formData.fullName}
-                    onChange={handleInputChange}
-                  />
-                  {errors.fullName && <p className="text-xs text-red-600 mt-2">{errors.fullName}</p>}
-                </div>
 
-                <div>
-                  <label htmlFor="username" className="block text-sm mb-2 dark:text-white">
-                    Username
-                  </label>
-                  <input
-                    type="text"
-                    id="username"
-                    name="username"
-                    className="py-3 px-4 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500"
-                    value={formData.username}
-                    onChange={handleInputChange}
-                  />
-                  {errors.username && <p className="text-xs text-red-600 mt-2">{errors.username}</p>}
-                </div>
+            <Form.Item className="mt-6">
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={loading}
+                className="w-full md:w-auto"
+              >
+                Create Admin
+              </Button>
+            </Form.Item>
+          </Form>
+        )}
 
-                <div>
-                  <label htmlFor="email" className="block text-sm mb-2 dark:text-white">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    className="py-3 px-4 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                  />
-                  {errors.email && <p className="text-xs text-red-600 mt-2">{errors.email}</p>}
-                </div>
+        {currentStep === 1 && (
+          <Form
+            form={hospitalForm}
+            layout="vertical"
+            onFinish={handleHospitalSubmit}
+            className="p-4"
+          >
+            <div className="grid grid-cols-1 gap-4">
+              <Form.Item
+                label="Hospital Name"
+                name="name"
+                rules={[{ required: true, message: 'Please input the hospital name!' }]}
+              >
+                <Input placeholder="General Hospital" />
+              </Form.Item>
 
-                <div>
-                  <label htmlFor="phoneNumber" className="block text-sm mb-2 dark:text-white">
-                    Phone Number
-                  </label>
-                  <input
-                    type="text"
-                    id="phoneNumber"
-                    name="phoneNumber"
-                    className="py-3 px-4 block w-full border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500"
-                    value={formData.phoneNumber}
-                    onChange={handleInputChange}
-                  />
-                  {errors.phoneNumber && <p className="text-xs text-red-600 mt-2">{errors.phoneNumber}</p>}
-                </div>
+              <Form.Item
+                label="Address"
+                name="address"
+                rules={[{ required: true, message: 'Please input the hospital address!' }]}
+              >
+                <Input.TextArea rows={2} placeholder="456 Health Ave, Medical City" />
+              </Form.Item>
 
-                <button
-                  type="submit"
-                  className="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:bg-blue-700"
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Form.Item
+                  label="Phone Number"
+                  name="phoneNumber"
+                  rules={[{ required: true, message: 'Please input the phone number!' }]}
                 >
-                  Sign Up
-                </button>
+                  <Input placeholder="+1234567890" />
+                </Form.Item>
+
+                <Form.Item
+                  label="Email"
+                  name="email"
+                  rules={[
+                    { required: true, message: 'Please input the email!' },
+                    { type: 'email', message: 'Please enter a valid email!' },
+                  ]}
+                >
+                  <Input placeholder="contact@generalhospital.com" />
+                </Form.Item>
+
+                <Form.Item
+                  label="Website"
+                  name="website"
+                  rules={[{ type: 'url', message: 'Please enter a valid URL!' }]}
+                >
+                  <Input placeholder="https://www.generalhospital.com" />
+                </Form.Item>
               </div>
-            </form>
-          )}
-        </div>
-      </div>
+            </div>
+
+            <Form.Item className="mt-6">
+              <div className="flex justify-between">
+                <Button
+                  onClick={() => setCurrentStep(0)}
+                  className="mr-4"
+                >
+                  Back
+                </Button>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={loading}
+                >
+                  Create Hospital
+                </Button>
+              </div>
+            </Form.Item>
+          </Form>
+        )}
+
+        {currentStep === 2 && (
+          <div className="p-4">
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold">Admin Information</h3>
+              <p className="text-gray-600">
+                Admin ID: <span className="font-mono">{adminId}</span>
+              </p>
+              <p className="text-gray-600">
+                Name: <span className="font-mono">
+                  {adminForm.getFieldValue('firstname')} {adminForm.getFieldValue('lastname')}
+                </span>
+              </p>
+              <p className="text-gray-600">
+                Email: <span className="font-mono">{adminForm.getFieldValue('email')}</span>
+              </p>
+            </div>
+
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold">Hospital Information</h3>
+              <p className="text-gray-600">
+                Hospital ID: <span className="font-mono">{hospitalId}</span>
+              </p>
+              <p className="text-gray-600">
+                Name: <span className="font-mono">{hospitalForm.getFieldValue('name')}</span>
+              </p>
+              <p className="text-gray-600">
+                Address: <span className="font-mono">{hospitalForm.getFieldValue('address')}</span>
+              </p>
+            </div>
+
+            <div className="flex justify-between mt-8">
+              <Button
+                onClick={() => setCurrentStep(1)}
+                className="mr-4"
+              >
+                Back
+              </Button>
+              <Button
+                type="primary"
+                onClick={handleAssignAdmin}
+                loading={loading}
+              >
+                Assign Admin to Hospital
+              </Button>
+            </div>
+          </div>
+        )}
+      </Card>
     </div>
   );
 };
 
-export default Page;

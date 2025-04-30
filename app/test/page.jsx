@@ -1,192 +1,371 @@
 "use client";
-import { useState, useRef } from 'react';
+import React, { useState } from 'react';
+import { Form, Input, Button, Select, DatePicker, message, Steps, Card, Divider } from 'antd';
+import { IconBase } from 'react-icons';
+import { useRouter } from 'next/navigation';
+// import { UserOutlined, HospitalOutlined, LinkOutlined } from '@ant-design/icons';
 
-export default function AudioTranslator() {
-  const audioRef = useRef(null);
-  
-  // Reorganized data structure with English as primary key
-  const phraseBank = [
-    {
-      english: "Remove metallic clothing",
-      translations: {
-        shona: { text: "Bvisai mbatya dzine simbi", audio: "/audio/shona/Bvisai mbatya dzine simbi.m4a" },
-        ndebele: { text: "Remove metallic clothing (Ndebele)", audio: "/audio/ndebele/metallic_clothing.m4a" }
-      },
-      category: "instructions"
-    },
-    {
-      english: "Breathe normally",
-      translations: {
-        shona: { text: "Femera zvakajairika", audio: "/audio/shona/Chifemai Zvakanaka.m4a" },
-        ndebele: { text: "Breathe normally (Ndebele)", audio: "/audio/ndebele/breathe_normal.m4a" }
-      },
-      category: "breathing"
-    },
-    {
-      english: "Breathe out and hold",
-      translations: {
-        shona: { text: "Femerai kunze momira kufema", audio: "/audio/shona/Femerai kunze momira kufema.m4a" },
-        ndebele: { text: "Breathe out and hold (Ndebele)", audio: "/audio/ndebele/Breath out (ndebele).m4a" }
-      },
-      category: "breathing"
-    },
-    {
-      english: "Breathe in and hold",
-      translations: {
-        shona: { text: "Femerai mukati muchengete", audio: "/audio/shona/Femerai mukati muchengete.m4a" },
-        ndebele: { text: "Breathe in and hold (Ndebele)", audio: "/audio/ndebele/Breath in(ndebele).m4a" }
-      },
-      category: "breathing"
-    },
-    {
-      english: "Don't move",
-      translations: {
-        shona: { text: "Musafamba famba", audio: "/audio/shona/Musafamba famba.m4a" },
-        ndebele: { text: "Stay still (Ndebele)", audio: "/audio/ndebele/Stay still (ndebele).m4a" }
-      },
-      category: "movement"
-    },
-    {
-      english: "Raise your chin",
-      translations: {
-        shona: { text: "Simudzirai Chirebvu Chenyu", audio: "/audio/shona/Simudzirai Chirebvu Chenyu.m4a" },
-        ndebele: { text: "Raise your chin (Ndebele)", audio: "/audio/ndebele/Raise your chin(isindebele).m4a" }
-      },
-      category: "positioning"
-    }
-  ];
+const { Step } = Steps;
+const { Option } = Select;
 
-  const categories = [
-    { id: "all", name: "All Phrases" },
-    { id: "instructions", name: "Instructions" },
-    { id: "breathing", name: "Breathing" },
-    { id: "movement", name: "Movement" },
-    { id: "positioning", name: "Positioning" }
-  ];
+export default function HospitalAdminCreation() {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [adminId, setAdminId] = useState(null);
+  const [hospitalId, setHospitalId] = useState(null);
+  const [loading, setLoading] = useState(false);
+const router = useRouter(); // Use useRouter from next/navigation
+  const [adminForm] = Form.useForm();
+  const [hospitalForm] = Form.useForm();
 
-  const languages = [
-    { id: "english", name: "English" },
-    { id: "shona", name: "Shona" },
-    { id: "ndebele", name: "Ndebele" }
-  ];
+  const handleAdminSubmit = async (values) => {
+    console.log(values);
+    setLoading(true);
+    try {
+      // Format date to YYYY-MM-DD
+      values.dateOfBirth = values.dateOfBirth.format('YYYY-MM-DD');
+      values.roles = ["ADMIN"];
 
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedLanguage, setSelectedLanguage] = useState("shona");
-  const [nowPlaying, setNowPlaying] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
+      const response = await fetch('http://localhost:8080/admin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          "firstname": values.firstname,
+          "lastname": values.lastname,
+          "email": values.email,
+          "username": values.username,
+          "password": values.password,
+          "gender": values.gender,
+          "mobileNumber": values.mobileNumber,
+          "nationalId": values.nationalId,
+          "dateOfBirth": values.dateOfBirth,
+          "address": values.address,
+          "roles": [
+              "ADMIN"
+          ]
+      }),
+      });
 
-  const playAudio = (audioSrc, englishText) => {
-    if (audioRef.current) {
-      audioRef.current.src = audioSrc;
-      audioRef.current.play();
-      setNowPlaying(englishText);
-      
-      audioRef.current.onended = () => {
-        setNowPlaying(null);
-      };
+      if (!response.ok) {
+        throw new Error('Failed to create admin');
+      }
+
+      const data = await response.json();
+      setAdminId(data.id);
+      message.success('Admin created successfully!');
+      setCurrentStep(1);
+    } catch (error) {
+      message.error(`Error creating admin: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const filteredPhrases = phraseBank.filter(phrase => {
-    const matchesCategory = selectedCategory === "all" || phrase.category === selectedCategory;
-    const matchesSearch = phrase.english.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+  const handleHospitalSubmit = async (values) => {
+    setLoading(true);
+    try {
+      // Create hospital without admin first
+      const hospitalData = {
+        ...values,
+        admin: null,
+        radiographers: []
+      };
+
+      const response = await fetch('http://localhost:8080/hospital', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(hospitalData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create hospital');
+      }
+
+      const data = await response.json();
+      setHospitalId(data.id);
+      message.success('Hospital created successfully!');
+      setCurrentStep(2);
+    } catch (error) {
+      message.error(`Error creating hospital: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAssignAdmin = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`http://localhost:8080/hospital/${hospitalId}/assign-admin/${adminId}`, {
+        method: 'PUT',
+        headers: {
+          'accept': '*/*',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to assign admin to hospital');
+      }
+
+      message.success('Admin assigned to hospital successfully!');
+      setCurrentStep(0);
+      adminForm.resetFields();
+      hospitalForm.resetFields();
+      setAdminId(null);
+      setHospitalId(null);
+      router.push('/auth/sign-in'); // Redirect to hospital page after assignment
+    } catch (error) {
+      message.error(`Error assigning admin: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-8">
-      <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
-        {/* Header */}
-        <div className="bg-blue-600 p-6 text-white">
-          <h1 className="text-2xl md:text-3xl font-bold">Medical Communication Tool</h1>
-          <p className="text-blue-100">For Zimbabwean Healthcare Providers</p>
-        </div>
+    <div className="container mx-auto p-4 max-w-4xl">
+      <Card title="Register new hospital" className="shadow-lg">
+        <Steps current={currentStep} className="mb-8">
+          <Step title="Create Admin"  />
+          <Step title="Create Hospital" />
+          <Step title="Assign Admin" />
+        </Steps>
 
-        {/* Controls */}
-        <div className="p-6 border-b">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <div>
-              <label className="block text-gray-700 text-sm font-medium mb-2">Search Phrases</label>
-              <input
-                type="text"
-                placeholder="Search English phrases..."
-                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700 text-sm font-medium mb-2">Category</label>
-              <select 
-                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
+        <Divider />
+
+        {currentStep === 0 && (
+          <Form
+            form={adminForm}
+            layout="vertical"
+            onFinish={handleAdminSubmit}
+            className="p-4"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Form.Item
+                label="First Name"
+                name="firstname"
+                rules={[{ required: true, message: 'Please input the first name!' }]}
               >
-                {categories.map(category => (
-                  <option key={category.id} value={category.id}>{category.name}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-gray-700 text-sm font-medium mb-2">Output Language</label>
-              <select 
-                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                value={selectedLanguage}
-                onChange={(e) => setSelectedLanguage(e.target.value)}
+                <Input placeholder="John" />
+              </Form.Item>
+
+              <Form.Item
+                label="Last Name"
+                name="lastname"
+                rules={[{ required: true, message: 'Please input the last name!' }]}
               >
-                {languages.map(language => (
-                  <option key={language.id} value={language.id}>{language.name}</option>
-                ))}
-              </select>
+                <Input placeholder="Doe" />
+              </Form.Item>
+
+              <Form.Item
+                label="Email"
+                name="email"
+                rules={[
+                  { required: true, message: 'Please input the email!' },
+                  { type: 'email', message: 'Please enter a valid email!' },
+                ]}
+              >
+                <Input placeholder="john.doe@example.com" />
+              </Form.Item>
+
+              <Form.Item
+                label="Username"
+                name="username"
+                rules={[{ required: true, message: 'Please input the username!' }]}
+              >
+                <Input placeholder="johndoe" />
+              </Form.Item>
+
+              <Form.Item
+                label="Password"
+                name="password"
+                rules={[{ required: true, message: 'Please input the password!' }]}
+              >
+                <Input.Password placeholder="••••••••" />
+              </Form.Item>
+
+              <Form.Item
+                label="Gender"
+                name="gender"
+                rules={[{ required: true, message: 'Please select gender!' }]}
+              >
+                <Select placeholder="Select gender">
+                  <Option value="MALE">Male</Option>
+                  <Option value="FEMALE">Female</Option>
+                  <Option value="OTHER">Other</Option>
+                </Select>
+              </Form.Item>
+
+              <Form.Item
+                label="Mobile Number"
+                name="mobileNumber"
+                rules={[{ required: true, message: 'Please input the mobile number!' }]}
+              >
+                <Input placeholder="+1234567890" />
+              </Form.Item>
+
+              <Form.Item
+                label="National ID"
+                name="nationalId"
+                rules={[{ required: true, message: 'Please input the national ID!' }]}
+              >
+                <Input placeholder="1234567890" />
+              </Form.Item>
+
+              <Form.Item
+                label="Date of Birth"
+                name="dateOfBirth"
+                rules={[{ required: true, message: 'Please select date of birth!' }]}
+              >
+                <DatePicker className="w-full" />
+              </Form.Item>
+
+              <Form.Item
+                label="Address"
+                name="address"
+                rules={[{ required: true, message: 'Please input the address!' }]}
+              >
+                <Input.TextArea rows={2} placeholder="123 Main St, City, Country" />
+              </Form.Item>
+            </div>
+
+            <Form.Item className="mt-6">
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={loading}
+                className="w-full md:w-auto"
+              >
+                Create Admin
+              </Button>
+            </Form.Item>
+          </Form>
+        )}
+
+        {currentStep === 1 && (
+          <Form
+            form={hospitalForm}
+            layout="vertical"
+            onFinish={handleHospitalSubmit}
+            className="p-4"
+          >
+            <div className="grid grid-cols-1 gap-4">
+              <Form.Item
+                label="Hospital Name"
+                name="name"
+                rules={[{ required: true, message: 'Please input the hospital name!' }]}
+              >
+                <Input placeholder="General Hospital" />
+              </Form.Item>
+
+              <Form.Item
+                label="Address"
+                name="address"
+                rules={[{ required: true, message: 'Please input the hospital address!' }]}
+              >
+                <Input.TextArea rows={2} placeholder="456 Health Ave, Medical City" />
+              </Form.Item>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Form.Item
+                  label="Phone Number"
+                  name="phoneNumber"
+                  rules={[{ required: true, message: 'Please input the phone number!' }]}
+                >
+                  <Input placeholder="+1234567890" />
+                </Form.Item>
+
+                <Form.Item
+                  label="Email"
+                  name="email"
+                  rules={[
+                    { required: true, message: 'Please input the email!' },
+                    { type: 'email', message: 'Please enter a valid email!' },
+                  ]}
+                >
+                  <Input placeholder="contact@generalhospital.com" />
+                </Form.Item>
+
+                <Form.Item
+                  label="Website"
+                  name="website"
+                  rules={[{ type: 'url', message: 'Please enter a valid URL!' }]}
+                >
+                  <Input placeholder="https://www.generalhospital.com" />
+                </Form.Item>
+              </div>
+            </div>
+
+            <Form.Item className="mt-6">
+              <div className="flex justify-between">
+                <Button
+                  onClick={() => setCurrentStep(0)}
+                  className="mr-4"
+                >
+                  Back
+                </Button>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={loading}
+                >
+                  Create Hospital
+                </Button>
+              </div>
+            </Form.Item>
+          </Form>
+        )}
+
+        {currentStep === 2 && (
+          <div className="p-4">
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold">Admin Information</h3>
+              <p className="text-gray-600">
+                Admin ID: <span className="font-mono">{adminId}</span>
+              </p>
+              <p className="text-gray-600">
+                Name: <span className="font-mono">
+                  {adminForm.getFieldValue('firstname')} {adminForm.getFieldValue('lastname')}
+                </span>
+              </p>
+              <p className="text-gray-600">
+                Email: <span className="font-mono">{adminForm.getFieldValue('email')}</span>
+              </p>
+            </div>
+
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold">Hospital Information</h3>
+              <p className="text-gray-600">
+                Hospital ID: <span className="font-mono">{hospitalId}</span>
+              </p>
+              <p className="text-gray-600">
+                Name: <span className="font-mono">{hospitalForm.getFieldValue('name')}</span>
+              </p>
+              <p className="text-gray-600">
+                Address: <span className="font-mono">{hospitalForm.getFieldValue('address')}</span>
+              </p>
+            </div>
+
+            <div className="flex justify-between mt-8">
+              <Button
+                onClick={() => setCurrentStep(1)}
+                className="mr-4"
+              >
+                Back
+              </Button>
+              <Button
+                type="primary"
+                onClick={handleAssignAdmin}
+                loading={loading}
+              >
+                Assign Admin to Hospital
+              </Button>
             </div>
           </div>
-        </div>
-
-        {/* Phrases Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
-          {filteredPhrases.length > 0 ? (
-            filteredPhrases.map((phrase, index) => {
-              const translation = phrase.translations[selectedLanguage] || {};
-              return (
-                <div 
-                  key={index}
-                  className={`bg-gray-50 rounded-lg p-4 border hover:border-blue-300 transition-all cursor-pointer
-                    ${nowPlaying === phrase.english ? 'ring-2 ring-blue-500 bg-blue-50' : ''}`}
-                  onClick={() => playAudio(translation.audio || "", phrase.english)}
-                >
-                  <h3 className="font-bold text-lg text-gray-800 mb-1">{phrase.english}</h3>
-                  {translation.text && (
-                    <p className="text-sm text-gray-600 mb-2">
-                      {selectedLanguage === "english" ? "" : translation.text}
-                    </p>
-                  )}
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
-                      {phrase.category}
-                    </span>
-                    <button 
-                      className={`px-3 py-1 rounded-full text-sm ${
-                        nowPlaying === phrase.english 
-                          ? 'bg-blue-600 text-white' 
-                          : 'bg-white text-blue-600 border border-blue-300'
-                      }`}
-                    >
-                      {nowPlaying === phrase.english ? 'Playing...' : 'Play'}
-                    </button>
-                  </div>
-                </div>
-              );
-            })
-          ) : (
-            <div className="col-span-full text-center py-8 text-gray-500">
-              No phrases found matching your search
-            </div>
-          )}
-        </div>
-
-        {/* Hidden Audio Element */}
-        <audio ref={audioRef} />
-      </div>
+        )}
+      </Card>
     </div>
   );
-}
+};
+

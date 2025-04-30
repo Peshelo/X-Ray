@@ -39,7 +39,7 @@ const MedicalReports = () => {
 
     try {
       // Fetch patient profile
-      const profileResponse = await fetch('http://4.222.233.23/api/patient/profile', {
+      const profileResponse = await fetch('http://localhost:8080/patient/profile', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -56,7 +56,7 @@ const MedicalReports = () => {
       setPatient(patientData);
 
       // Fetch radiographs using the patient ID
-      const radiographsResponse = await fetch(`http://4.222.233.23/api/radiograph/get-by-patient/${patientData.id}`, {
+      const radiographsResponse = await fetch(`http://localhost:8080/radiograph/get-by-patient/${patientData.id}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -82,7 +82,7 @@ const MedicalReports = () => {
     setLoading(true);
     const token = Cookies.get('token');
     try {
-      const response = await fetch(`http://4.222.233.23/api/radiograph/${radiographId}`, {
+      const response = await fetch(`http://localhost:8080/radiograph/${radiographId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -126,7 +126,7 @@ const MedicalReports = () => {
       key: 'imageUrl',
       render: (text) => (
         <Image
-          src={`http://4.222.233.23/api/${text}`}
+          src={`http://localhost:8080/${text}`}
           width={100}
         />
       ),

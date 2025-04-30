@@ -38,7 +38,7 @@ const Page = () => {
     if (!validateForm()) return;
 
     try {
-      const response = await fetch('http://4.222.233.23/api/auth/login', {
+      const response = await fetch('http://localhost:8080/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -164,13 +164,13 @@ document.cookie = `token=${data.token};max-age=86400;path=/;SameSite=Lax`;
                 >
                   Sign in
                 </button>
-                <label htmlFor="fingerprint" className="block text-center text-xs my-2 dark:text-neutral-400">Or sign in with</label>
+                {/* <label htmlFor="fingerprint" className="block text-center text-xs my-2 dark:text-neutral-400">Or sign in with</label>
                 <button
           className="w-full py-3 px-4 flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-300 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-white"
         >
           <img src='/fingerprint.png' alt='Fingerprint' className='w-5 h-5 object-contain' />
           Sign in with fingerprint
-        </button>
+        </button> */}
               </div>
             </form>
           </div>

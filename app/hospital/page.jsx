@@ -79,7 +79,7 @@ const columns = [
     },
 ];
 
-const BASE_URL = "http://4.222.233.23/api";
+const BASE_URL = "http://localhost:8080";
 
 const Dashboard = () => {
     const [hospital, setHospital] = useState(null);
@@ -122,7 +122,7 @@ const Dashboard = () => {
             <h1 className="text-2xl font-bold mb-6">{hospital?.name} Hospital Admin Dashboard</h1>
 
             {/* Statistics Section */}
-            <Row gutter={16} className="mb-6">
+            {/* <Row gutter={16} className="mb-6">
                 {statisticsData.map((stat) => (
                     <Col xs={24} sm={12} md={6} key={stat.title}>
                         <Card>
@@ -134,7 +134,7 @@ const Dashboard = () => {
                         </Card>
                     </Col>
                 ))}
-            </Row>
+            </Row> */}
 
             {/* Hospital Details Section */}
             <Card className="mb-6">

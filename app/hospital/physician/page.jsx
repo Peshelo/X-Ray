@@ -47,7 +47,7 @@ const Physician = () => {
     const fetchPhysicians = async () => {
         try {
             const token = Cookies.get("token");
-            const response = await fetch("http://4.222.233.23/api/physician", {
+            const response = await fetch("http://localhost:8080/physician", {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`
@@ -191,7 +191,7 @@ const Physician = () => {
     const handleDelete = async (id) => {
         try {
             const token = Cookies.get("token");
-            const response = await fetch(`http://4.222.233.23/api/physician/${id}`, {
+            const response = await fetch(`http://localhost:8080/physician/${id}`, {
                 method: "DELETE",
                 headers: {
                     "Authorization": `Bearer ${token}`
@@ -220,7 +220,7 @@ const Physician = () => {
             };
 
             if (isEdit) {
-                const response = await fetch(`http://4.222.233.23/api/physician/${currentPhysician.id}`, {
+                const response = await fetch(`http://localhost:8080/physician/${currentPhysician.id}`, {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
@@ -239,7 +239,7 @@ const Physician = () => {
                 );
                 message.success('Physician updated successfully');
             } else {
-                const response = await fetch("http://4.222.233.23/api/physician", {
+                const response = await fetch("http://localhost:8080/physician", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",

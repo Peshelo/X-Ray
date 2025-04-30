@@ -13,7 +13,7 @@ const Index = () => {
 
     const fetchProfile = async () => {
         const token = Cookies.get("token");
-        const data = await fetch(`http://4.222.233.23/api/radiographer/profile`, {
+        const data = await fetch(`http://localhost:8080/radiographer/profile`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -45,7 +45,7 @@ const Index = () => {
                             <Image
                                 width={400}
                                 height={400}
-                                src={`http://4.222.233.23/api/${profile?.profileUrl}`}  
+                                src={`http://localhost:8080/${profile?.profileUrl}`}  
                                 className='shadow-md border-2 object-cover border-white'
                             />
                         </div>
