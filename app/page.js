@@ -97,7 +97,7 @@ export default function Home() {
                 Sign In to Dashboard
               </Link>
               <Link
-                href="/auth/register-hospital"
+                href="/auth/sign-in"
                 className="border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50 px-6 py-3 rounded-lg font-medium text-center transition duration-300"
               >
                 Register Your Hospital
