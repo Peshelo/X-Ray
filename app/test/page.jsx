@@ -25,7 +25,7 @@ const router = useRouter(); // Use useRouter from next/navigation
       values.dateOfBirth = values.dateOfBirth.format('YYYY-MM-DD');
       values.roles = ["ADMIN"];
 
-      const response = await fetch('http://localhost:8080/admin', {
+      const response = await fetch('http://4.222.233.23/api/admin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ const router = useRouter(); // Use useRouter from next/navigation
         radiographers: []
       };
 
-      const response = await fetch('http://localhost:8080/hospital', {
+      const response = await fetch('http://4.222.233.23/api/hospital', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -98,7 +98,7 @@ const router = useRouter(); // Use useRouter from next/navigation
   const handleAssignAdmin = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:8080/hospital/${hospitalId}/assign-admin/${adminId}`, {
+      const response = await fetch(`http://4.222.233.23/api/hospital/${hospitalId}/assign-admin/${adminId}`, {
         method: 'PUT',
         headers: {
           'accept': '*/*',

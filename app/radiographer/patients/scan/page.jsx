@@ -27,7 +27,7 @@ export default function FingerprintPage() {
     try {
       setLoading(true);
       setError('');
-      const response = await fetch('http://localhost:8080/patient/get-by-fingerprint', {
+      const response = await fetch('http://4.222.233.23/api/patient/get-by-fingerprint', {
         method: 'POST',
         body: formData,
       });
@@ -80,7 +80,7 @@ export default function FingerprintPage() {
           <div className="mt-8 border-t pt-6">
             <div className="flex flex-col items-center">
               <img 
-                src={`https://localhost:8080/${userData.profileUrl}`}
+                src={`https://4.222.233.23/api/${userData.profileUrl}`}
                 alt="Profile"
                 className="w-32 h-32 rounded-full object-cover border-4 border-blue-400"
               />

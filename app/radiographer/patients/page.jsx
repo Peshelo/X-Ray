@@ -231,7 +231,7 @@ const Page = () => {
         setLoading(true);
         const token = Cookies.get("token");
         try {
-            const response = await fetch("http://localhost:8080/patient", {
+            const response = await fetch("http://4.222.233.23/api/patient", {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`
@@ -284,7 +284,7 @@ const Page = () => {
     const handleDelete = async (id) => {
         const token = Cookies.get("token");
         try {
-            const response = await fetch(`http://localhost:8080/patient/${id}`, {
+            const response = await fetch(`http://4.222.233.23/api/patient/${id}`, {
                 method: "DELETE",
                 headers: {
                     "Authorization": `Bearer ${token}`
@@ -314,7 +314,7 @@ const Page = () => {
 
         if (isEdit) {
             try {
-                const response = await fetch(`http://localhost:8080/patient/${currentPatient.id}`, {
+                const response = await fetch(`http://4.222.233.23/api/patient/${currentPatient.id}`, {
                     method: "PUT",
                     headers: {
                         "Authorization": `Bearer ${token}`,
@@ -337,7 +337,7 @@ const Page = () => {
             }
         } else {
             try {
-                const response = await fetch("http://localhost:8080/patient", {
+                const response = await fetch("http://4.222.233.23/api/patient", {
                     method: "POST",
                     headers: {
                         "Authorization": `Bearer ${token}`,
