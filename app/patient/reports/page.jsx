@@ -4,6 +4,7 @@ import {
   Button,
   Card,
   Descriptions,
+  Drawer,
   Space,
   Table,
   Popconfirm,
@@ -19,16 +20,25 @@ import {
   ArrowLeftOutlined,
 } from '@ant-design/icons';
 import Cookies from 'js-cookie';
+import moment from 'moment';
 
 const MedicalReports = () => {
   const router = useRouter();
   const [patient, setPatient] = useState(null);
   const [radiographs, setRadiographs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectedRadiograph, setSelectedRadiograph] = useState(null);
 
   // Navigate back to the previous page
   const onBack = () => {
     router.back();
+  };
+
+  // Close drawer
+  const handleCloseDrawer = () => {
+    setDrawerOpen(false);
+    setSelectedRadiograph(null);
   };
 
   // Fetch patient details and radiographs
@@ -145,10 +155,14 @@ const MedicalReports = () => {
               Delete
             </Button>
           </Popconfirm> */}
+          
           <Button
             type="default"
             icon={<FileSearchOutlined />}
-            // Add your view report logic here
+            onClick={() => {
+              setSelectedRadiograph(record);
+              setDrawerOpen(true);
+            }}
           >
             View Report
           </Button>
@@ -176,6 +190,74 @@ const MedicalReports = () => {
         rowKey="id"
         loading={loading}
       />
+
+      {/* Drawer for Viewing Radiograph Report */}
+      <Drawer
+        title="X-Ray Report"
+        open={drawerOpen}
+        onClose={handleCloseDrawer}
+        footer={null}
+        width={1400}
+      >
+        {selectedRadiograph && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Image
+              alt="X-Ray"
+              src={`http://4.222.233.23/api/${selectedRadiograph.imageUrl}`}
+              className="w-full h-fit object-contain"
+            />
+            <div className="w-full flex flex-col gap-4">
+              <Descriptions column={1} title="Patient Details" bordered>
+                <Descriptions.Item label="Name">
+                  {selectedRadiograph.patient?.firstname} {selectedRadiograph.patient?.lastname}
+                </Descriptions.Item>
+                <Descriptions.Item label="Gender">
+                  {selectedRadiograph.patient?.gender}
+                </Descriptions.Item>
+                <Descriptions.Item label="Date of Birth">
+                  {selectedRadiograph.patient?.dateOfBirth
+                    ? moment(selectedRadiograph.patient.dateOfBirth).format('YYYY-MM-DD')
+                    : 'N/A'}
+                </Descriptions.Item>
+                <Descriptions.Item label="National ID">
+                  {selectedRadiograph.patient?.nationalId}
+                </Descriptions.Item>
+                <Descriptions.Item label="Contact">
+                  {selectedRadiograph.patient?.mobileNumber}
+                </Descriptions.Item>
+              </Descriptions>
+
+              <Descriptions column={1} title="Scan Details" bordered>
+                <Descriptions.Item label="Name">{selectedRadiograph.name}</Descriptions.Item>
+                <Descriptions.Item label="Description">{selectedRadiograph.description}</Descriptions.Item>
+                <Descriptions.Item label="Date of Scan">
+                  {selectedRadiograph.date
+                    ? moment(selectedRadiograph.date).format('YYYY-MM-DD')
+                    : 'N/A'}
+                </Descriptions.Item>
+                <Descriptions.Item label="Radiographer Notes">
+                  {selectedRadiograph.radiographerNotes}
+                </Descriptions.Item>
+              </Descriptions>
+
+              <Descriptions column={1} title="Radiographer Details" bordered>
+                <Descriptions.Item label="Name">
+                  {selectedRadiograph.radiographer?.firstname} {selectedRadiograph.radiographer?.lastname}
+                </Descriptions.Item>
+                <Descriptions.Item label="Gender">
+                  {selectedRadiograph.radiographer?.gender}
+                </Descriptions.Item>
+                <Descriptions.Item label="National ID">
+                  {selectedRadiograph.radiographer?.nationalId}
+                </Descriptions.Item>
+                <Descriptions.Item label="Contact">
+                  {selectedRadiograph.radiographer?.mobileNumber}
+                </Descriptions.Item>
+              </Descriptions>
+            </div>
+          </div>
+        )}
+      </Drawer>
     </div>
   );
 };

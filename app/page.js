@@ -83,7 +83,7 @@ export default function Home() {
         <div className="flex flex-col md:flex-row items-center">
           <div className="md:w-1/2 mb-12 md:mb-0">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-indigo-900 leading-tight mb-6">
-              Modern X-Ray Management <span className="text-indigo-600">Simplified</span>
+              Patient-Centric Hybrid X-Ray Image <span className="text-indigo-600">Management System</span>
             </h1>
             <p className="text-lg text-indigo-800 mb-8">
               Secure, cloud-based solution for hospitals to manage, store, and analyze X-ray images with
