@@ -51,7 +51,7 @@ export default function Home() {
               Sign In
             </Link>
             <Link
-              href="/auth/register-hospital"
+              href="/auth/sign-up"
               className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition duration-300"
             >
               Register Hospital
@@ -216,7 +216,7 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
             <Link
-              href="/auth/register-hospital"
+              href="/auth/sign-up"
               className="bg-white text-indigo-600 hover:bg-gray-100 px-8 py-3 rounded-lg font-medium transition duration-300"
             >
               Get Started Today
